@@ -1,45 +1,41 @@
-import { getProduct } from '@/app/action/appwrite'
-import React from 'react'
+import { getProduct } from '@/app/action/appwrite';
+import React from 'react';
 
+type Product = {
+  $id: string;
+  name: string;
+  price: number;
+  long_description: string;
+  short_description: string;
+  images: string[];
+};
 
 interface ProductDetailProps {
-    params: {
-        id: string
-    }
+  params: { id: string };
 }
-    
-     type productprop = {
-        $id: string,
-        name: string,
-        price: number,
-        long_description: string,
-        short_description: string,
-        image: string,
-    }
-        
-       
- const ProductDetail = async ({ params }: ProductDetailProps) => {
-         const {id} = params
 
-         const product = await getProduct(id);
+const ProductDetail = async ({ params }: ProductDetailProps) => {
+  const product = await getProduct(params.id);
 
-         console.log(product);
+  if (!product) {
+    return <div className="p-4 text-red-500">Product not found.</div>;
+  }
 
-         return(    
-          <div className='grid grid-cols-1 md:grid-cols-4 py-5'>  
-            <div className='col-span-1 md:col-span-2'>
-              <img src={product?.images[0]} />
-            </div>
-            
-            <div className='col-span-1 md:col-span-2'>
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-4 py-5">
+      <div className="col-span-1 md:col-span-2">
+        <img src={product.images[0]} alt={product.name} />
+      </div>
 
-              <p className='py-5 text-2x1 font-bold'>{product?.Name}  <span>NGN {product?.Price}</span></p>
-              <p>{product?.Long_Description}</p>
-            </div>
-            </div>
-         )
- }
+      <div className="col-span-1 md:col-span-2">
+        <p className="py-5 text-2xl font-bold">
+<span>NGN {Number(product.price).toLocaleString()}</span>
 
+        </p>
+        <p>{product.long_description}</p>
+      </div>
+    </div>
+  );
+};
 
-
- export default ProductDetail
+export default ProductDetail;
