@@ -15,7 +15,7 @@ interface ProductDetailProps {
 }
 
 const ProductDetail = async ({ params }: ProductDetailProps) => {
-  const product = await getProduct(params.id);
+  const product: Product | null = await getProduct(params.id);
 
   if (!product) {
     return <div className="p-4 text-red-500">Product not found.</div>;
@@ -29,8 +29,7 @@ const ProductDetail = async ({ params }: ProductDetailProps) => {
 
       <div className="col-span-1 md:col-span-2">
         <p className="py-5 text-2xl font-bold">
-<span>NGN {Number(product.price).toLocaleString()}</span>
-
+          <span>NGN {Number(product.price).toLocaleString()}</span>
         </p>
         <p>{product.long_description}</p>
       </div>
