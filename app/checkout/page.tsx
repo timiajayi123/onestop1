@@ -1,25 +1,20 @@
 'use client';
-export const dynamicSetting = 'force-dynamic'; // <-- renamed to avoid conflict
+export const dynamic = 'force-dynamic';
 
-import React, { useState, useEffect } from "react";
-import { useCartStore } from "@/app/Store/CartStore";
-import { createOrder } from "@/lib/createOrder";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import { account } from "@/lib/appwriteConfig";
-import dynamic from "next/dynamic";
-
-const PaystackButton = dynamic(
-  () => import("react-paystack").then(mod => mod.PaystackButton),
-  { ssr: false }
-);
+import React, { useState, useEffect } from 'react';
+import { useCartStore } from '@/app/Store/CartStore';
+import { createOrder } from '@/lib/createOrder';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
+import { account } from '@/lib/appwriteConfig';
+import PaystackButton from '@/components/ui/PaystackButton'// 👈 Your custom client-side component
 
 const CheckoutPage = () => {
-  const { cart, totalPrice, clearCart, setCart, setTotalPrice } = useCartStore();
-  const [address, setAddress] = useState("");
-  const [phone, setPhone] = useState("");
-  const [userId, setUserId] = useState("");
-  const [email, setEmail] = useState("");
+  const { cart, totalPrice, clearCart, setCart } = useCartStore();
+  const [address, setAddress] = useState('');
+  const [phone, setPhone] = useState('');
+  const [userId, setUserId] = useState('');
+  const [email, setEmail] = useState('');
   const [isClientReady, setIsClientReady] = useState(false);
 
   const router = useRouter();
@@ -30,7 +25,7 @@ const CheckoutPage = () => {
       const result = await verifyRes.json();
 
       if (!result.success) {
-        toast.error("Payment verification failed");
+        toast.error('Payment verification failed');
         return;
       }
 
@@ -43,65 +38,46 @@ const CheckoutPage = () => {
           name: item.name,
           price: item.price,
           quantity: item.quantity,
-          image: item.image,
+          image: item.image || "/placeholder.jpg",
         })),
         totalAmount: totalPrice(),
         paystackRef: reference,
       });
 
       if (orderRes.success && orderRes.data) {
-        toast.success("Order placed!");
+        toast.success('Order placed!');
         clearCart();
         router.push(`/success?orderId=${orderRes.data.$id}`);
       } else {
-        toast.error(orderRes.message || "Order failed");
+        toast.error(orderRes.message || 'Order failed');
       }
     } catch (err) {
       console.error(err);
-      toast.error("Something went wrong");
+      toast.error('Something went wrong');
     }
   };
 
   useEffect(() => {
-    // Only runs on client
     const checkAuthAndHydrateCart = async () => {
       try {
         const user = await account.get();
         setUserId(user.$id);
         setEmail(user.email);
       } catch {
-        toast.warning("You need to sign in to checkout");
-        router.push("/signin");
+        toast.warning('You need to sign in to checkout');
+        router.push('/signin');
       }
 
-      // Hydrate cart from localStorage if needed
-      const storedCart = localStorage.getItem("checkoutCart");
-      const storedTotal = localStorage.getItem("checkoutTotal");
+      const storedCart = localStorage.getItem('checkoutCart');
 
-      if (storedCart) {
-        setCart(JSON.parse(storedCart));
-      }
+      if (storedCart) setCart(JSON.parse(storedCart));
+      // Removed setTotalPrice as it does not exist
 
-      if (storedTotal) {
-        setTotalPrice(parseFloat(storedTotal));
-      }
-
-      setIsClientReady(true); // mark hydration done
+      setIsClientReady(true);
     };
 
     checkAuthAndHydrateCart();
-  }, [router, setCart, setTotalPrice]);
-
-  const publicKey = "pk_test_4b80438a9e6c48413a367eb76f58eadae5f31a42";
-
-  const paystackProps = {
-    email: email || "placeholder@email.com",
-    amount: totalPrice() * 100,
-    publicKey,
-    text: "Pay with Paystack",
-    onSuccess: (ref: any) => handleSuccess(ref.reference),
-    onClose: () => toast.info("Payment closed"),
-  };
+  }, [router, setCart]);
 
   if (!isClientReady) {
     return <p className="text-center py-10">Loading checkout...</p>;
@@ -113,10 +89,12 @@ const CheckoutPage = () => {
 
       <div className="bg-white p-6 rounded shadow space-y-4">
         {cart.length > 0 ? (
-          cart.map((item) => (
+          cart.map((item: { $id: React.Key | null | undefined; name: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; quantity: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; price: number; }) => (
             <div key={item.$id} className="flex justify-between">
-              <span>{item.name} (x{item.quantity})</span>
-              <span>₦{item.price * item.quantity}</span>
+              <span>
+                {item.name} (x{item.quantity})
+              </span>
+              <span>₦{item.price * (typeof item.quantity === 'number' ? item.quantity : Number(item.quantity) || 0)}</span>
             </div>
           ))
         ) : (
@@ -147,8 +125,10 @@ const CheckoutPage = () => {
         {address && phone ? (
           <div className="mt-6">
             <PaystackButton
-              {...paystackProps}
-              className="w-full bg-black text-white px-6 py-3 rounded text-lg hover:bg-gray-800 transition"
+              email={email}
+              amount={totalPrice()}
+              onSuccess={handleSuccess}
+              onClose={() => toast.info('Payment closed')}
             />
           </div>
         ) : (

@@ -4,7 +4,7 @@ import "./globals.css";
 import Header from "./myReusableComponents/Header";
 import { Toaster } from "@/components/ui/sonner";
 import StoreEmail from "@/components/ui/StoreEmail";
-import { database, Config, client } from '@/lib/appwriteConfig';
+import { client } from '@/lib/appwriteConfig';
 
 
 if (typeof window !== 'undefined') {

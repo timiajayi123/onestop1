@@ -1,4 +1,4 @@
-  import { getProduct } from '@/app/action/appwrite';
+
   import { database } from '@/app/action/appwrite';
   import { Product } from "@/app/types/Product";
   import { Query } from "appwrite";

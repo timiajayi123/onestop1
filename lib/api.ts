@@ -1,4 +1,4 @@
-import { Client, Databases, ID, Query } from "appwrite";
+import { Client, Databases, Query } from "appwrite";
 
 const client = new Client()
   .setEndpoint("https://cloud.appwrite.io/v1") // ✅ Replace with your endpoint if different

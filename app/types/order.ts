@@ -1,16 +1,11 @@
-import { CartItem } from '@/app/types/cart';
-
-export interface Order {
+export type Order = {
   $id: string;
-  $createdAt: string;
-  $updatedAt: string;
-
   userId: string;
+  total: number;
   address: string;
   phone: string;
-  cart: CartItem[];
-  totalAmount: number;
-
-  status?: 'pending' | 'processed' | 'shipped' | 'cancelled'; // Add more if needed
-  email?: string; // Optional, helps with searching
-}
+  status: string;
+  createdAt: string;
+  orderNumber?: string;
+  paystackRef?: string;
+};

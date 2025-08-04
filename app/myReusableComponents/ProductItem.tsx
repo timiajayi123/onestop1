@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { toast } from 'sonner';
@@ -13,7 +12,6 @@ import {
   CardFooter,
 } from '@/components/ui/card';
 import { Product } from '@/app/types/Product';
-import { useEffect } from "react";
 
 interface ProductItemProps {
   product: Product;
@@ -23,11 +21,11 @@ const ProductItem = ({ product }: ProductItemProps) => {
   const pathname = usePathname();
   const { addToCart } = useCartStore();
   const isCategoryPage = pathname?.startsWith('/category');
-  const [loading, setLoading] = useState(false);
+  // Removed unused loading state
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setLoading(true);
+    // setLoading(true); // Removed unused loading state
 
     addToCart({
       $id: product.$id,
@@ -55,7 +53,7 @@ const ProductItem = ({ product }: ProductItemProps) => {
   );
 
 
-    setTimeout(() => setLoading(false), 1000);
+    // setTimeout(() => setLoading(false), 1000); // Removed unused loading state
   };
 
   return (

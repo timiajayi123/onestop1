@@ -19,11 +19,7 @@ type CartState = {
   updateQuantity: (id: string, quantity: number) => void;
   totalPrice: () => number;
   setCart: (items: CartItem[]) => void;
-  setTotalPrice: (price: number) => void;
 };
-
-// Check if running on the client
-const isClient = typeof window !== 'undefined';
 
 export const useCartStore = create<CartState>()(
   persist(
@@ -65,14 +61,13 @@ export const useCartStore = create<CartState>()(
           0
         ),
 
-      setCart: (items: CartItem[]) => set({ cart: items }),
-      setTotalPrice: (_price: number) => {},
+      setCart: (items) => set({ cart: items }),
     }),
     {
       name: 'cart-storage',
-      storage: isClient
+      storage: typeof window !== 'undefined'
         ? createJSONStorage(() => localStorage)
-        : undefined, // 💥 prevents `window` usage at build time
+        : undefined, // avoids window error during SSR
     }
   )
 );
