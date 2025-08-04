@@ -1,19 +1,29 @@
-import { database } from "@/app/appwrite";
-import { ID, Query } from "appwrite";
+  import { getProduct } from '@/app/action/appwrite';
+  import { database } from '@/app/action/appwrite';
+  import { Product } from "@/app/types/Product";
+  import { Query } from "appwrite";
 
-export const getProductsByCategory = async (category: string) => {
-  try {
-    const response = await database.listDocuments(
-      process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!,
-      process.env.NEXT_PUBLIC_APPWRITE_PRODUCT_COLLECTION_ID!,
-      [
-        Query.equal("category", category.toLowerCase()),
-      ]
-    );
+  export async function getProductsByCategory(category: string): Promise<Product[]> {
+    try {
+      const response = await database.listDocuments(
+        "67cb37e2000b1b9ebcf7",
+        "67cb39180023bdb0c2fc",
+        [Query.equal("category", category)]
+      );
 
-    return response.documents;
-  } catch (error) {
-    console.error("Error fetching category:", error);
-    return [];
+      // transform each doc to Product type
+      return response.documents.map((doc: any) => ({
+        $id: doc.$id,
+        name: doc.name,
+        price: doc.Price,
+        long_description: doc.long_description,
+        short_description: doc.short_description,
+        images: doc.images,
+        category: doc.category,
+        colors: doc.colors,
+      }));
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      return [];
+    }
   }
-};

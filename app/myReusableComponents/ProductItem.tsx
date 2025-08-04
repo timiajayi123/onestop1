@@ -13,6 +13,7 @@ import {
   CardFooter,
 } from '@/components/ui/card';
 import { Product } from '@/app/types/Product';
+import { useEffect } from "react";
 
 interface ProductItemProps {
   product: Product;
@@ -34,21 +35,25 @@ const ProductItem = ({ product }: ProductItemProps) => {
       price: product.price,
       image: product.images?.[0],
       quantity: 1,
+      
     });
+    console.log("Product in toast:", product);
 
-    toast.success(
-      <div className="flex items-center gap-3">
-        <img
-          src={product.images?.[0]}
-          alt={product.name}
-          className="w-10 h-10 rounded object-cover"
-        />
-        <div>
-          <p className="font-semibold">{product.name}</p>
-          <p className="text-sm text-muted-foreground">Added to cart</p>
-        </div>
+ toast.success(
+    <div className="flex items-center gap-3">
+<img
+  src={product.images?.[0]}
+  alt={product.name}
+  className="w-12 h-12 rounded object-cover border border-gray-200"
+/>
+
+      <div>
+        <p className="font-semibold">1 item of {product.category}</p>
+        <p className="text-sm text-muted-foreground">Added to cart</p>
       </div>
-    );
+    </div>
+  );
+
 
     setTimeout(() => setLoading(false), 1000);
   };

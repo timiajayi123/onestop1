@@ -1,6 +1,7 @@
-// store/cartStore.ts
+'use client';
+
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage } from 'zustand/middleware';
 
 type CartItem = {
   $id: string;
@@ -17,7 +18,12 @@ type CartState = {
   clearCart: () => void;
   updateQuantity: (id: string, quantity: number) => void;
   totalPrice: () => number;
+  setCart: (items: CartItem[]) => void;
+  setTotalPrice: (price: number) => void;
 };
+
+// Check if running on the client
+const isClient = typeof window !== 'undefined';
 
 export const useCartStore = create<CartState>()(
   persist(
@@ -31,7 +37,9 @@ export const useCartStore = create<CartState>()(
         if (existing) {
           set({
             cart: cart.map((i) =>
-              i.$id === item.$id ? { ...i, quantity: i.quantity + item.quantity } : i
+              i.$id === item.$id
+                ? { ...i, quantity: i.quantity + item.quantity }
+                : i
             ),
           });
         } else {
@@ -52,10 +60,19 @@ export const useCartStore = create<CartState>()(
         }),
 
       totalPrice: () =>
-        get().cart.reduce((total, item) => total + item.price * item.quantity, 0),
+        get().cart.reduce(
+          (total, item) => total + item.price * item.quantity,
+          0
+        ),
+
+      setCart: (items: CartItem[]) => set({ cart: items }),
+      setTotalPrice: (_price: number) => {},
     }),
     {
-      name: 'cart-storage', // Key in localStorage
+      name: 'cart-storage',
+      storage: isClient
+        ? createJSONStorage(() => localStorage)
+        : undefined, // 💥 prevents `window` usage at build time
     }
   )
 );

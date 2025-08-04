@@ -79,13 +79,14 @@ const Header = () => {
       </div>
 
       {/* Navigation */}
-      <nav className="flex gap-6 items-center text-sm font-medium relative">
-        <a
-          href="#"
-          className="text-white/80 hover:text-white transition-colors duration-200"
-        >
-          Home
-        </a>
+ <nav className="flex gap-6 items-center text-sm font-medium relative">
+  <Link
+    href="/"
+    className="text-white/80 hover:text-white transition-colors duration-200"
+  >
+    Home
+  </Link>
+    
 
         {!user ? (
           <Link

@@ -11,7 +11,6 @@ const ImageSlider = () => {
 
   const Images = [
         "images/Carousel2.png",
-        "images/Carousel4.png",
         "images/Carousel1.jpeg",
         "images/Carousel3.jpeg",
 

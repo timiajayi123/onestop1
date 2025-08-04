@@ -1,4 +1,4 @@
-import { Client, Databases } from "appwrite";
+import { Client, Databases, Query } from "appwrite";
 import { Product } from "../types/Product";
 
 export const Config = {
@@ -13,7 +13,6 @@ export const database = new Databases(client);
 
 client.setEndpoint(Config.endpoint!).setProject(Config.project!);
 
-// ✅ Update this
 export const listProducts = async (): Promise<Product[] | null> => {
   try {
     const response = await database.listDocuments(
@@ -23,15 +22,13 @@ export const listProducts = async (): Promise<Product[] | null> => {
 
     if (!response) throw new Error("No products found");
 
-return response.documents as unknown as Product[];
-
+    return response.documents as unknown as Product[];
   } catch (error) {
     console.error(error);
     return null;
   }
 };
 
-// ✅ Update this
 export const getProduct = async (
   productId: string
 ): Promise<Product | null> => {
@@ -44,8 +41,26 @@ export const getProduct = async (
 
     if (!response) throw new Error("No product found");
 
-return response as unknown as Product;
+    return response as unknown as Product;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
 
+export const getProductsByCategory = async (
+  category: string
+): Promise<Product[] | null> => {
+  try {
+    const response = await database.listDocuments(
+      Config.databaseId!,
+      Config.productCollectionId!,
+      [Query.equal("category", category)]
+    );
+
+    if (!response) throw new Error("No products found");
+
+    return response.documents as unknown as Product[];
   } catch (error) {
     console.error(error);
     return null;

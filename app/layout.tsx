@@ -3,6 +3,14 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "./myReusableComponents/Header";
 import { Toaster } from "@/components/ui/sonner";
+import StoreEmail from "@/components/ui/StoreEmail";
+import { database, Config, client } from '@/lib/appwriteConfig';
+
+
+if (typeof window !== 'undefined') {
+  const sessionCookie = document.cookie;
+  client.setSession(sessionCookie);
+}
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,9 +38,14 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Header/>
+         <StoreEmail /> {/* ✅ Add this to store email on every load */}
         {children}
         
-        <Toaster/>
+      <Toaster
+          
+     
+          visibleToasts={3} // 👈 limit stacking to 3
+        />
       </body>
     </html>
   );

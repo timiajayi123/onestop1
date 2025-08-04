@@ -86,11 +86,16 @@ const Page = () => {
 
               {/* Checkout Button */}
               <button
-                onClick={() => router.push('/checkout')}
-                className="mt-8 px-6 py-3 bg-black text-white text-lg font-semibold rounded-lg hover:bg-gray-800 transition"
-              >
-                Proceed to Checkout
-              </button>
+  onClick={() => {
+    localStorage.setItem("checkoutCart", JSON.stringify(cart));
+    localStorage.setItem("checkoutTotal", totalPrice().toString());
+    router.push('/checkout');
+  }}
+  className="mt-8 px-6 py-3 bg-black text-white text-lg font-semibold rounded-lg hover:bg-gray-800 transition"
+>
+  Proceed to Checkout
+</button>
+
             </div>
           </CardContent>
         </Card>
