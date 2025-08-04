@@ -101,7 +101,8 @@
     "typescript": "^5.8.3",
     "undici-types": "^6.21.0",
     "utrie": "^1.0.2",
-    "yallist": "^5.0.0"
+    "yallist": "^5.0.0",
+    "zustand": "^5.0.7"
   },
   "scripts": {
     "dev": "next dev",
