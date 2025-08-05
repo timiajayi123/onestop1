@@ -90,10 +90,10 @@ export default function AddProductPage() {
         Config.productsCollectionId,
         ID.unique(),
         {
-          name,
-          price: parseFloat(price),
-          short_description: shortDesc,
-          long_description: longDesc,
+          Name: name, // match the exact field name in your Appwrite schema
+          Price: parseFloat(price),
+          Short_Description: shortDesc,
+          Long_Description: longDesc,
           images,
           category,
         },
