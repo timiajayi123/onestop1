@@ -21,6 +21,7 @@
         images: doc.images,
         category: doc.category,
         colors: doc.colors,
+        stock: doc.stock, // Add this line to match Product type
       }));
     } catch (error) {
       console.error("Error fetching products:", error);

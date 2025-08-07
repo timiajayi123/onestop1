@@ -7,4 +7,5 @@ export type Product = {
   images: string[];
   category?: string;
   colors?: string[];
+  stock: number; // ✅ change this l
 };

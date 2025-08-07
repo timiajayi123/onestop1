@@ -34,31 +34,15 @@ import Footer from "@/components/Footer";
   }>) {
     return (
       <html lang="en">
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        >
-          <Header/>
-          <StoreEmail /> {/* ✅ Add this to store email on every load */}
-          {children}
-          
-        <Toaster
-            
-      
-            visibleToasts={3} // 👈 limit stacking to 3
-          />
-          <body
-  className={`${geistSans.variable} ${geistMono.variable} antialiased`}
->
+      <body className={`flex flex-col min-h-screen ${geistSans.variable} ${geistMono.variable} antialiased`}>
   <Header />
-  <StoreEmail />
+  <StoreEmail /> {/* ✅ Add this to store email on every load */}
+          <main className="flex-grow">
   {children}
-
+  </main>
   <Footer /> {/* ✅ This is what was missing */}
-
-  <Toaster visibleToasts={3} />
+  <Toaster visibleToasts={3} /> {/* 👈 limit stacking to 3 */}
 </body>
-
-        </body>
       </html>
     );
   }

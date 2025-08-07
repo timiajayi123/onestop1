@@ -25,13 +25,12 @@ export default function AddProductPage() {
   const [category, setCategory] = useState('');
   const [categories, setCategories] = useState<string[]>([]);
 
-  const [darkMode, setDarkMode] = useState(false);
+
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   const router = useRouter();
 
-  const toggleDarkMode = () => setDarkMode(!darkMode);
   const toggleDrawer = () => setDrawerOpen(!drawerOpen);
   const toggleSidebar = () => setSidebarCollapsed(!sidebarCollapsed);
   const handleLogout = () => {
@@ -117,8 +116,7 @@ export default function AddProductPage() {
 
   return (
     <AdminShell
-      darkMode={darkMode}
-      toggleDarkMode={toggleDarkMode}
+
       sidebarCollapsed={sidebarCollapsed}
       toggleSidebar={toggleSidebar}
       drawerOpen={drawerOpen}

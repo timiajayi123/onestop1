@@ -16,6 +16,8 @@ type productProps = {
   images: string[];
   $id: string;
   category: string;
+  inStock: number;
+  stock: number;
 };
 
 const Home = () => {
@@ -27,17 +29,19 @@ const Home = () => {
     try {
       setLoading(true);
       const response = await listProducts();
-      if (!response) throw new Error('No Product Found');
-
-      const formattedData = response.map((doc: any) => ({
-        name: doc.Name,
-        price: doc.Price,
-        long_description: doc.Long_Description,
-        short_description: doc.Short_Description,
-        images: doc.images,
-        $id: doc.$id,
-        category: doc.category || "",
-      }));
+      const formattedData = Array.isArray(response)
+        ? response.map((doc: any) => ({
+            name: doc.Name,
+            price: doc.Price,
+            long_description: doc.Long_Description,
+            short_description: doc.Short_Description,
+            images: doc.images,
+            $id: doc.$id,
+            category: doc.category || "",
+            inStock: doc.inStock ?? 0,
+            stock: doc.stock ?? doc.stock ?? 0,
+          }))
+        : [];
 
       setProducts(formattedData);
     } catch (error) {
@@ -105,3 +109,4 @@ const Home = () => {
 }
 
 export default Home;
+/* No additional code needed at the end of this file. */

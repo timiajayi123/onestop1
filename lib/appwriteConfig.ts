@@ -27,6 +27,7 @@ export const Config = {
   adminTeamId: process.env.NEXT_PUBLIC_ADMIN_TEAM_ID || '',  // ✅ Add this line
     bucketId: process.env.NEXT_PUBLIC_APPWRITE_BUCKET_ID!,
       projectId: process.env.NEXT_PUBLIC_APPWRITE_PROJECT || '', // ← Add this
+      favoritesCollectionId: process.env.NEXT_PUBLIC_APPWRITE_FAVORITES_COLLECTION_ID || '', // ← Add this
 };
 
 // Admin team ID from environment variables

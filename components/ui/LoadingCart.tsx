@@ -49,9 +49,13 @@ export const CartLoader = () => {
         </div>
 
         {/* Progress Text */}
-        <span className="text-sm font-medium text-gray-600 animate-pulse">
-          Loading Products...
+        <span className="text-sm font-medium text-black-600 animate-pulse">
+          OneStopShop.com.ng
         </span>
+        {/* Optional Footer Progress Bar */}
+        <div className="w-full h-1.5 bg-gray-200 rounded overflow-hidden">
+          <div className="h-full bg-gray-800 animate-loading-bar rounded" />
+        </div>
       </div>
     </div>
   );

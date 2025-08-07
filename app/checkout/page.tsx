@@ -92,7 +92,7 @@ const CheckoutPage = () => {
           cart.map((item: { $id: React.Key | null | undefined; name: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; quantity: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; price: number; }) => (
             <div key={item.$id} className="flex justify-between">
               <span>
-                {item.name} (x{item.quantity})
+                {String(item.name)} (x{String(item.quantity)})
               </span>
               <span>₦{item.price * (typeof item.quantity === 'number' ? item.quantity : Number(item.quantity) || 0)}</span>
             </div>

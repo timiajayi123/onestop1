@@ -12,20 +12,25 @@ import {
   CardFooter,
 } from '@/components/ui/card';
 import { Product } from '@/app/types/Product';
+import FavoritesButton from "@/app/myReusableComponents/FavoritesButton";
+import { Button } from '@/components/ui/button';
 
 interface ProductItemProps {
   product: Product;
+  showStock?: boolean;
+  isWishlistPage?: boolean;
+  onRemove?: () => void;
+  hideFavoriteButton?: boolean;
 }
 
-const ProductItem = ({ product }: ProductItemProps) => {
+
+const ProductItem = ({ product, showStock = false, isWishlistPage = false, onRemove, hideFavoriteButton = false }: ProductItemProps) => {
   const pathname = usePathname();
   const { addToCart } = useCartStore();
   const isCategoryPage = pathname?.startsWith('/category');
-  // Removed unused loading state
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.stopPropagation();
-    // setLoading(true); // Removed unused loading state
 
     addToCart({
       $id: product.$id,
@@ -33,31 +38,47 @@ const ProductItem = ({ product }: ProductItemProps) => {
       price: product.price,
       image: product.images?.[0],
       quantity: 1,
-      
     });
-    console.log("Product in toast:", product);
 
- toast.success(
-    <div className="flex items-center gap-3">
-<img
-  src={product.images?.[0]}
-  alt={product.name}
-  className="w-12 h-12 rounded object-cover border border-gray-200"
-/>
-
-      <div>
-        <p className="font-semibold">1 item of {product.category}</p>
-        <p className="text-sm text-muted-foreground">Added to cart</p>
+    toast.success(
+      <div className="flex items-center gap-3">
+        <img
+          src={product.images?.[0]}
+          alt={product.name}
+          className="w-12 h-12 rounded object-cover border border-gray-200"
+        />
+        <div>
+          <p className="font-semibold">1 item of {product.category}</p>
+          <p className="text-sm text-muted-foreground">Added to cart</p>
+        </div>
       </div>
-    </div>
-  );
-
-
-    // setTimeout(() => setLoading(false), 1000); // Removed unused loading state
+    );
   };
 
   return (
-    <Card className="cursor-pointer transition hover:shadow-md">
+    <Card className="relative cursor-pointer transition hover:shadow-md">
+{/* ❤️ Favorites Button */}
+{!hideFavoriteButton && (
+  <div className="absolute top-2 right-2 z-20">
+    <FavoritesButton productId={product.$id} />
+  </div>
+)}
+
+      {isWishlistPage && onRemove && (
+  <Button
+    variant="ghost"
+    size="icon"
+    onClick={(e) => {
+      e.stopPropagation();
+      onRemove();
+    }}
+    className="absolute top-2 right-2 text-red-500 hover:text-red-700"
+  >
+    ❌
+  </Button>
+)}
+
+
       <CardHeader>
         <h3 className="text-lg font-semibold">{product.name}</h3>
       </CardHeader>
@@ -73,16 +94,31 @@ const ProductItem = ({ product }: ProductItemProps) => {
       </CardContent>
 
       <CardFooter className="flex justify-between items-center">
-        <span className="text-sm font-semibold">₦{product.price}</span>
+        <div className="flex flex-col gap-1">
+          <span className="text-sm font-semibold">₦{product.price}</span>
+
+          {showStock && (
+            product.stock > 0 ? (
+              <span className="text-xs text-green-600 font-medium">
+                In Stock ({product.stock} left)
+              </span>
+            ) : (
+              <span className="text-xs text-red-500 font-medium">
+                Out of Stock
+              </span>
+            )
+          )}
+        </div>
 
         {isCategoryPage ? (
           <div className="relative inline-block group overflow-hidden w-[160px] h-[42px]">
             <button
               onClick={handleAddToCart}
               className="bg-white text-black font-medium w-full h-full rounded-full border-2 border-gray-300 hover:border-black shadow-sm hover:shadow-md relative flex items-center justify-center"
+              disabled={product.stock <= 0}
             >
               <span className="transition-opacity duration-300 group-hover:opacity-0 z-10">
-                Add to Cart
+                {product.stock > 0 ? 'Add to Cart' : 'Unavailable'}
               </span>
               <ShoppingCart
                 className="h-5 w-5 text-black absolute top-1/2 left-[-30px] -translate-y-1/2 opacity-0 group-hover:left-[calc(50%-10px)] group-hover:opacity-100 transition-all duration-500 ease-in-out z-20"

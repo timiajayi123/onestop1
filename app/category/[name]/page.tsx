@@ -24,7 +24,8 @@ export default async function CategoryPage({ params }: Props) {
       <h1 className="text-2xl font-bold mb-6 capitalize">{category} Products</h1>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
         {products.map((product) => (
-          <ProductItem key={product.$id} product={product} />
+<ProductItem product={product} key={product.$id} showStock={true} />
+
         ))}
       </div>
     </div>
