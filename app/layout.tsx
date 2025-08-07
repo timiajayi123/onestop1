@@ -5,6 +5,7 @@
   import { Toaster } from "@/components/ui/sonner";
   import StoreEmail from "@/components/ui/StoreEmail";
   import { client } from '@/lib/appwriteConfig';
+  import { Analytics } from "@vercel/analytics/next"
 import Footer from "@/components/Footer";
 
   if (typeof window !== 'undefined') {
@@ -42,6 +43,7 @@ import Footer from "@/components/Footer";
   </main>
   <Footer /> {/* ✅ This is what was missing */}
   <Toaster visibleToasts={3} /> {/* 👈 limit stacking to 3 */}
+  <Analytics /> {/* 👈 Mount it here so it loads globally */}
 </body>
       </html>
     );
