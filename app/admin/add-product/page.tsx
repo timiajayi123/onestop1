@@ -125,7 +125,7 @@ export default function AddProductPage() {
     >
       <form
         onSubmit={handleSubmit}
-        className="max-w-2xl mx-auto p-6 bg-white dark:bg-gray-900 rounded-lg shadow space-y-5"
+        className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow space-y-5"
       >
         <h2 className="text-2xl font-bold">➕ Add New Product</h2>
 

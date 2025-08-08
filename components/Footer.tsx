@@ -84,12 +84,12 @@ Powered by OSS
             exit={{ opacity: 0 }}
           >
             <motion.div
-              className="bg-white dark:bg-gray-900 p-8 rounded-2xl shadow-xl w-[90%] max-w-md text-center"
+              className="bg-white p-8 rounded-2xl shadow-xl w-[90%] max-w-md text-center"
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.8, opacity: 0 }}
             >
-              <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-white">
+              <h2 className="text-2xl font-bold mb-4 text-gray-800">
                 Enter Admin PIN
               </h2>
               <input
@@ -101,12 +101,12 @@ Powered by OSS
                   setError('');
                 }}
                 placeholder="••••••"
-                className="w-full text-center tracking-widest text-xl p-3 rounded-lg border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-800 dark:text-white"
+                className="w-full text-center tracking-widest text-xl p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
               {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
               <div className="flex justify-between items-center mt-6 space-x-3">
                 <button
-                  className="w-full py-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-sm font-semibold"
+                  className="w-full py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-sm font-semibold"
                   onClick={() => setShowModal(false)}
                 >
                   Cancel
