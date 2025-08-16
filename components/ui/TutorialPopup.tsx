@@ -34,8 +34,7 @@ const slides: Slide[] = [
     title: "Variants of this type of Product",
     subtitle: "Now you can add to cart as you wish",
   },
-
-   {
+  {
     type: "video",
     src: "/tutorial/vid3.mp4",
     title: "Add to Cart",
@@ -116,37 +115,38 @@ const TutorialPopup = ({ onClose }: Props) => {
             </h2>
             <p className="text-gray-600 mb-4">{current.subtitle}</p>
 
-            {/* Slide Content */}
-            <div className="relative w-full h-[320px] rounded-xl overflow-hidden mb-6 bg-black">
-              {slides.map((slide, index) =>
-                slide.type === "image" ? (
-                  currentSlide === index && (
-                    <img
-                      key={slide.src}
-                      src={slide.src}
-                      alt={`Slide ${index + 1}`}
-                      className="w-full h-full object-cover absolute inset-0"
-                    />
-                  )
-                ) : (
-                  <video
-                    key={slide.src}
-ref={(el) => {
-  videoRefs.current[index] = el;
-}}
-
-                    src={slide.src}
-                    muted
-                    loop
-                    playsInline
-                    preload="auto"
-                    className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${
-                      index === currentSlide ? "opacity-100" : "opacity-0"
-                    }`}
-                  />
-                )
+            {/* Slide Content with swipe */}
+            <motion.div
+              key={currentSlide}
+              className="relative w-full h-[320px] rounded-xl overflow-hidden mb-6 bg-black"
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              onDragEnd={(_e, { offset, velocity }) => {
+                const swipe = offset.x * velocity.x;
+                if (swipe < -500) nextSlide();
+                else if (swipe > 500) prevSlide();
+              }}
+            >
+              {current.type === "image" ? (
+                <img
+                  src={current.src}
+                  alt={current.title}
+                  className="w-full h-full object-cover absolute inset-0"
+                />
+              ) : (
+                <video
+                  ref={(el) => {
+                    videoRefs.current[currentSlide] = el;
+                  }}
+                  src={current.src}
+                  muted
+                  loop
+                  playsInline
+                  preload="auto"
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
               )}
-            </div>
+            </motion.div>
 
             {/* Close Button */}
             <motion.button

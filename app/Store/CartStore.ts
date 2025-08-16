@@ -25,23 +25,36 @@ export const useCartStore = create<CartState>()(
   persist(
     (set, get) => ({
       cart: [],
+addToCart: (item) => {
+  
+  console.log("🛒 addToCart called with:", item); // <--- ADD THIS
 
-      addToCart: (item) => {
-        const cart = get().cart;
-        const existing = cart.find((i) => i.$id === item.$id);
 
-        if (existing) {
-          set({
-            cart: cart.map((i) =>
-              i.$id === item.$id
-                ? { ...i, quantity: i.quantity + item.quantity }
-                : i
-            ),
-          });
-        } else {
-          set({ cart: [...cart, item] });
-        }
-      },
+  const cart = get().cart;
+  const existing = cart.find((i) => i.$id === item.$id);
+
+  // Create a fully valid cart item
+  const fullItem: CartItem = {
+    $id: item.$id,
+    name: item.name,
+    price: item.price || 0,
+    quantity: item.quantity || 1,
+    image: item.image || "/placeholder.png",
+  };
+  console.log("🧪 fullItem constructed as:", fullItem); // <--- ADD THIS TOO
+  if (existing) {
+    set({
+      cart: cart.map((i) =>
+        i.$id === fullItem.$id
+          ? { ...i, quantity: i.quantity + fullItem.quantity }
+          : i
+      ),
+    });
+  } else {
+    set({ cart: [...cart, fullItem] });
+  }
+},
+
 
       removeFromCart: (id) =>
         set({ cart: get().cart.filter((item) => item.$id !== id) }),
@@ -61,7 +74,17 @@ export const useCartStore = create<CartState>()(
           0
         ),
 
-      setCart: (items) => set({ cart: items }),
+setCart: (items) => {
+  const sanitized = items.map((item) => ({
+    $id: item.$id,
+    name: item.name,
+    price: item.price || 0,
+    quantity: item.quantity || 1,
+    image: item.image || "/placeholder.png",
+  }));
+  set({ cart: sanitized });
+},
+
     }),
     {
       name: 'cart-storage',

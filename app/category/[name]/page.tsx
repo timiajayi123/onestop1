@@ -1,9 +1,8 @@
 // app/category/[name]/page.tsx
-
 import { getProductsByCategory } from "@/lib/getProductsByCategory";
 import { Product } from "@/app/types/Product";
-import ProductItem from "@/app/myReusableComponents/ProductItem";
 import { notFound } from "next/navigation";
+import CategoryClient from "./CategoryClient";
 
 type Props = {
   params: {
@@ -21,13 +20,7 @@ export default async function CategoryPage({ params }: Props) {
 
   return (
     <div className="p-4 md:p-10">
-      <h1 className="text-2xl font-bold mb-6 capitalize">{category} Products</h1>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-        {products.map((product) => (
-<ProductItem product={product} key={product.$id} showStock={true} />
-
-        ))}
-      </div>
+      <CategoryClient products={products} category={category} />
     </div>
   );
 }
