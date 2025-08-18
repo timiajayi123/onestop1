@@ -4,8 +4,8 @@ import { NextResponse } from "next/server";
 
 // Server-side Appwrite client
 const client = new Client()
-  .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT!)  // OK
-  .setProject(process.env.APPWRITE_PROJECT_ID!)             // use server project ID
+  .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT!)  // public is OK for endpoint
+  .setProject(process.env.APPWRITE_PROJECT_ID!)             // server-only project ID
   .setKey(process.env.APPWRITE_API_KEY!);                  // server secret key
 
 const databases = new Databases(client);
@@ -29,8 +29,8 @@ export async function POST(req: Request) {
 
     // Create the order
     const order = await databases.createDocument(
-      process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!,
-      process.env.NEXT_PUBLIC_APPWRITE_ORDER_COLLECTION_ID!,
+      process.env.APPWRITE_DATABASE_ID!,
+      process.env.APPWRITE_ORDER_COLLECTION_ID!,
       ID.unique(),
       orderData,
       permissions
@@ -47,8 +47,8 @@ export async function POST(req: Request) {
       }
 
       const product = await databases.getDocument(
-        process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!,
-        process.env.NEXT_PUBLIC_APPWRITE_PRODUCT_COLLECTION_ID!,
+        process.env.APPWRITE_DATABASE_ID!,
+        process.env.APPWRITE_PRODUCT_COLLECTION_ID!,
         productId
       );
 
@@ -60,8 +60,8 @@ export async function POST(req: Request) {
       );
 
       await databases.updateDocument(
-        process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!,
-        process.env.NEXT_PUBLIC_APPWRITE_PRODUCT_COLLECTION_ID!,
+        process.env.APPWRITE_DATABASE_ID!,
+        process.env.APPWRITE_PRODUCT_COLLECTION_ID!,
         productId,
         { stock: newStock }
       );
