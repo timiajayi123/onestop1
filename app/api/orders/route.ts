@@ -1,29 +1,75 @@
-import { database, Config, ADMIN_TEAM_ID } from '@/lib/appwriteConfig';
-import { Permission, ID } from 'appwrite';
-import { NextResponse } from 'next/server';
+// app/api/orders/route.ts
+import { Client, Databases, ID, Permission } from "node-appwrite";
+import { NextResponse } from "next/server";
 
-export async function POST(request: Request) {
+// Server-side Appwrite client
+const client = new Client()
+  .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT!)  // OK
+  .setProject(process.env.APPWRITE_PROJECT_ID!)             // use server project ID
+  .setKey(process.env.APPWRITE_API_KEY!);                  // server secret key
+
+const databases = new Databases(client);
+
+export async function POST(req: Request) {
   try {
-    const body = await request.json();
-    const { userId, orderData } = body;
+    const { userId, orderData } = await req.json();
 
+    console.log("Received orderData:", orderData);
+
+    const items = Array.isArray(orderData.items) ? orderData.items : [];
+    console.log("Items array for stock update:", items);
+
+    // Permissions for the order document
     const permissions = [
-      Permission.read(`team:${ADMIN_TEAM_ID}/admin`),
-      Permission.update(`team:${ADMIN_TEAM_ID}/admin`),
-      Permission.delete(`team:${ADMIN_TEAM_ID}/admin`),
       Permission.read(`user:${userId}`),
+      Permission.read(`team:${process.env.ADMIN_TEAM_ID}/admin`),
+      Permission.update(`team:${process.env.ADMIN_TEAM_ID}/admin`),
+      Permission.delete(`team:${process.env.ADMIN_TEAM_ID}/admin`),
     ];
 
-    const document = await database.createDocument(
-      Config.databaseId,
-      Config.ordersCollectionId,
+    // Create the order
+    const order = await databases.createDocument(
+      process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!,
+      process.env.NEXT_PUBLIC_APPWRITE_ORDER_COLLECTION_ID!,
       ID.unique(),
       orderData,
       permissions
     );
 
-    return NextResponse.json(document, { status: 201 });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    // Update stock for each item
+    for (const item of items) {
+      const productId = item.$id;
+      const qtyOrdered = Number(item.quantity) || 0;
+
+      if (!productId) {
+        console.warn("Skipping item with no $id:", item);
+        continue;
+      }
+
+      const product = await databases.getDocument(
+        process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!,
+        process.env.NEXT_PUBLIC_APPWRITE_PRODUCT_COLLECTION_ID!,
+        productId
+      );
+
+      const currentStock = Number(product.stock) || 0;
+      const newStock = Math.max(currentStock - qtyOrdered, 0);
+
+      console.log(
+        `Stock update - Product: ${productId}, Current: ${currentStock}, Ordered: ${qtyOrdered}, New: ${newStock}`
+      );
+
+      await databases.updateDocument(
+        process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!,
+        process.env.NEXT_PUBLIC_APPWRITE_PRODUCT_COLLECTION_ID!,
+        productId,
+        { stock: newStock }
+      );
+    }
+
+    return NextResponse.json(order, { status: 201 });
+  } catch (err: any) {
+    console.error("Error in /api/orders:", err);
+    return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }

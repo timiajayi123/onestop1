@@ -3,11 +3,10 @@ export const dynamic = 'force-dynamic';
 
 import React, { useState, useEffect } from 'react';
 import { useCartStore } from '@/app/Store/CartStore';
-import { createOrder } from '@/lib/createOrder';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { account } from '@/lib/appwriteConfig';
-import PaystackButton from '@/components/ui/PaystackButton'// 👈 Your custom client-side component
+import PaystackButton from '@/components/ui/PaystackButton';
 
 const CheckoutPage = () => {
   const { cart, totalPrice, clearCart, setCart } = useCartStore();
@@ -21,6 +20,7 @@ const CheckoutPage = () => {
 
   const handleSuccess = async (reference: string) => {
     try {
+      // 1️⃣ Verify payment first
       const verifyRes = await fetch(`/api/verify/verifypaystack?reference=${reference}`);
       const result = await verifyRes.json();
 
@@ -29,27 +29,36 @@ const CheckoutPage = () => {
         return;
       }
 
-      const orderRes = await createOrder({
-        userId,
-        address,
-        phone,
-        cart: cart.map((item) => ({
-          id: item.$id,
-          name: item.name,
-          price: item.price,
-          quantity: item.quantity,
-          image: item.image || "/placeholder.jpg",
-        })),
-        totalAmount: totalPrice(),
-        paystackRef: reference,
+      // 2️⃣ Send cart + user info to server to create order & update stock
+      const orderRes = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId,
+          orderData: {
+            items: cart.map((item) => ({
+              $id: item.$id,
+              name: item.name,
+              price: item.price,
+              quantity: Number(item.quantity),
+              image: item.image || '/placeholder.jpg',
+            })),
+            total: totalPrice(),
+            address,
+            phone,
+            paystackRef: reference,
+          },
+        }),
       });
 
-      if (orderRes.success && orderRes.data) {
-        toast.success('Order placed!');
+      const orderData = await orderRes.json();
+
+      if (orderRes.ok) {
+        toast.success('Order placed successfully!');
         clearCart();
-        router.push(`/success?orderId=${orderRes.data.$id}`);
+        router.push(`/success?orderId=${orderData.$id}`);
       } else {
-        toast.error(orderRes.message || 'Order failed');
+        toast.error(orderData.error || 'Order failed');
       }
     } catch (err) {
       console.error(err);
@@ -66,12 +75,11 @@ const CheckoutPage = () => {
       } catch {
         toast.warning('You need to sign in to checkout');
         router.push('/signin');
+        return;
       }
 
       const storedCart = localStorage.getItem('checkoutCart');
-
       if (storedCart) setCart(JSON.parse(storedCart));
-      // Removed setTotalPrice as it does not exist
 
       setIsClientReady(true);
     };
@@ -79,9 +87,7 @@ const CheckoutPage = () => {
     checkAuthAndHydrateCart();
   }, [router, setCart]);
 
-  if (!isClientReady) {
-    return <p className="text-center py-10">Loading checkout...</p>;
-  }
+  if (!isClientReady) return <p className="text-center py-10">Loading checkout...</p>;
 
   return (
     <div className="max-w-2xl mx-auto py-12 px-4">
@@ -89,12 +95,12 @@ const CheckoutPage = () => {
 
       <div className="bg-white p-6 rounded shadow space-y-4">
         {cart.length > 0 ? (
-          cart.map((item: { $id: React.Key | null | undefined; name: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; quantity: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; price: number; }) => (
+          cart.map((item) => (
             <div key={item.$id} className="flex justify-between">
               <span>
-                {String(item.name)} (x{String(item.quantity)})
+                {item.name} (x{item.quantity})
               </span>
-              <span>₦{item.price * (typeof item.quantity === 'number' ? item.quantity : Number(item.quantity) || 0)}</span>
+              <span>₦{item.price * Number(item.quantity)}</span>
             </div>
           ))
         ) : (

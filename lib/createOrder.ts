@@ -1,8 +1,9 @@
 import { database } from "@/lib/appwriteConfig";
 import { ID } from "appwrite";
 
-const DATABASE_ID = "67cb37e2000b1b9ebcf7";
-const COLLECTION_ID = "6880c6b70035c9e8456f";
+const DATABASE_ID = "67cb37e2000b1b9ebcf7"; // ✅ Your DB
+const ORDERS_COLLECTION_ID = "6880c6b70035c9e8456f"; // ✅ Orders collection
+const PRODUCTS_COLLECTION_ID = "67cb39180023bdb0c2fc"; // 🔹 CHANGE THIS
 
 type CartItem = {
   id: string;
@@ -18,7 +19,7 @@ type OrderParams = {
   phone: string;
   cart: CartItem[];
   totalAmount: number;
-  paystackRef?: string; // ✅ include Paystack reference
+  paystackRef?: string;
 };
 
 export const createOrder = async ({
@@ -37,9 +38,10 @@ export const createOrder = async ({
       image: item.image || "/placeholder.jpg",
     }));
 
-    const res = await database.createDocument(
+    // 1. Create order
+    const orderRes = await database.createDocument(
       DATABASE_ID,
-      COLLECTION_ID,
+      ORDERS_COLLECTION_ID,
       ID.unique(),
       {
         userId,
@@ -47,16 +49,45 @@ export const createOrder = async ({
         phone,
         items: JSON.stringify(sanitizedCart),
         total: totalAmount,
-        paystackRef: paystackRef || "", // ✅ store the Paystack ref
+        paystackRef: paystackRef || "",
         orderNumber,
-        status: "pending",
+        status: "paid",
         createdAt: new Date().toISOString(),
       }
     );
 
-    return { success: true, data: res };
+    // 2. Update stock for each product
+    for (const item of cart) {
+      try {
+        console.log("Fetching product:", item.id);
+
+        const product = await database.getDocument(
+          DATABASE_ID,
+          PRODUCTS_COLLECTION_ID,
+          item.id
+        );
+
+        console.log("Current stock:", product.stock);
+
+        const newStock = (product.stock || 0) - item.quantity;
+        if (newStock < 0) throw new Error(`Not enough stock for ${product.name}`);
+
+        await database.updateDocument(
+          DATABASE_ID,
+          PRODUCTS_COLLECTION_ID,
+          item.id,
+          { stock: newStock }
+        );
+
+        console.log(`✅ Updated stock for ${product.name}: ${newStock}`);
+      } catch (err) {
+        console.error(`❌ Failed to update stock for product ${item.id}`, err);
+      }
+    }
+
+    return { success: true, data: orderRes };
   } catch (err: any) {
-    console.error("Error placing order:", err);
+    console.error("❌ Error placing order:", err);
     return { success: false, message: err.message };
   }
 };
