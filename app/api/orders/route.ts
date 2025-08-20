@@ -45,6 +45,8 @@ export async function POST(req: Request) {
         console.warn("Skipping item with no $id:", item);
         continue;
       }
+console.log("DatabaseId:", process.env.APPWRITE_DATABASE_ID);
+console.log("OrderCollectionId:", process.env.APPWRITE_ORDER_COLLECTION_ID);
 
       const product = await databases.getDocument(
         process.env.APPWRITE_DATABASE_ID!,
