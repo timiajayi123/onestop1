@@ -25,7 +25,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "OneStopShop",
+  title: "OneStopShop", 
   description: "Your favorite e-commerce store",
   icons: {
     icon: '/favicon.ico',
@@ -40,14 +40,17 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white md:bg-transparent`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white md:bg-transparent
+                    flex flex-col min-h-screen`} // <-- make body a flex column
       >
         <GlobalLoaderProvider>
           <Header />
           <StoreEmail />
+          
           <main className="flex-grow">
             {children}
           </main>
+
           <Footer />
           <Toaster visibleToasts={3} />
           <Analytics />

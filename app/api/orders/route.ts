@@ -1,4 +1,11 @@
 // app/api/orders/route.ts
+console.log("ENV CHECK", {
+  endpoint: process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT,
+  projectId: process.env.APPWRITE_PROJECT_ID,
+  apiKey: process.env.APPWRITE_API_KEY ? "loaded" : "missing",
+});
+
+
 import { Client, Databases, ID, Permission } from "node-appwrite";
 import { NextResponse } from "next/server";
 

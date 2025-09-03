@@ -1,6 +1,6 @@
 export type Product = {
   $id: string;
-  name: string;
+  Name: string;
   price: number;
   long_description: string;
   short_description: string;

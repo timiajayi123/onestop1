@@ -23,6 +23,7 @@ interface ProductItemProps {
   isWishlistPage?: boolean;
   onRemove?: () => void;
   hideFavoriteButton?: boolean;
+  isDetailPage?: boolean; // new prop
 }
 
 const ProductItem = ({
@@ -30,7 +31,8 @@ const ProductItem = ({
   showStock = false,
   isWishlistPage = false,
   onRemove,
-  hideFavoriteButton = false
+  hideFavoriteButton = false,
+  isDetailPage = false,
 }: ProductItemProps) => {
   const pathname = usePathname();
   const router = useRouter();
@@ -71,9 +73,38 @@ const ProductItem = ({
     }, 400); // matches animation duration
   };
 
+  // ✅ Single return with conditional for detail page
+  if (isDetailPage) {
+    return (
+      <div className="px-4 md:px-0">
+        <h1 className="text-3xl font-bold mb-4">{product.name}</h1>
+        <p className="text-2xl text-green-700 font-semibold mb-4">
+          NGN {Number(product.price).toLocaleString()}
+        </p>
+        <div className="w-full h-96 flex items-center justify-center bg-white rounded-md overflow-hidden mb-4">
+          <Image
+            src={product.images?.[0] || "/placeholder.png"}
+            alt={product.name}
+            width={600}
+            height={600}
+            className="max-h-full max-w-full object-contain"
+          />
+        </div>
+        <p className="text-gray-700">{product.long_description || "No description available."}</p>
+
+        {/* Optional: Add to cart in detail view */}
+        <button
+          onClick={handleAddToCart}
+          className="mt-4 px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+        >
+          Add to Cart
+        </button>
+      </div>
+    );
+  }
+
   return (
     <Card className="relative cursor-pointer transition hover:shadow-xl hover:scale-[1.02] duration-300">
-      {/* ❤️ Favorites Button */}
       {!hideFavoriteButton && (
         <div className="absolute top-2 right-2 z-20">
           <FavoritesButton productId={product.$id} />
@@ -115,7 +146,6 @@ const ProductItem = ({
       <CardFooter className="flex justify-between items-center">
         <div className="flex flex-col gap-1">
           <span className="text-sm font-semibold">₦{product.price}</span>
-
           {showStock && (
             product.stock > 0 ? (
               <span className="text-xs text-green-600 font-medium">
