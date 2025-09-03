@@ -18,7 +18,7 @@ export default function CategoryClient({ products, category }: Props) {
     const timer = setTimeout(() => {
       const formatted: Product[] = products.map((p: any) => ({
         $id: p.$id,
-        Name: p.Name ?? "Unnamed Product",
+        name: p.Name ?? "Unnamed Product",
         price: p.Price ?? 0,
         long_description: p.Long_Description ?? "",
         short_description: p.Short_Description ?? "",
