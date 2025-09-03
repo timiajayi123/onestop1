@@ -87,13 +87,18 @@ const [searchTerm, setSearchTerm] = useState('');
 
 const mappedProducts: Product[] = productsRes.documents.map((doc) => ({
   $id: doc.$id,
-  name: doc.Name,
-  price: typeof doc.Price === 'number' ? doc.Price : Number(doc.Price),
+  Name: doc.Name,
+  Price: typeof doc.Price === 'number' ? doc.Price : Number(doc.Price),
   category: doc.category,
   images: Array.isArray(doc.images) ? doc.images : [],
+  Long_Description: doc.Long_Description ?? '',
+  Short_Description: doc.Short_Description ?? '',
+  stock: typeof doc.stock === 'number' ? doc.stock : 0,
+  // For convenience in UI, also provide normalized fields (optional)
+  name: doc.Name,
+  price: typeof doc.Price === 'number' ? doc.Price : Number(doc.Price),
   long_description: doc.Long_Description ?? '',
-  short_description: doc.Short_Description ?? '',
-  stock: typeof doc.stock === 'number' ? doc.stock : 0 // ✅ Add this line
+  short_description: doc.Short_Description ?? ''
 }));
 
         const mappedOrders: Order[] = ordersRes.documents.map((doc) => {
